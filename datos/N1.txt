@@ -1,0 +1,140 @@
+from tkinter import *
+archivo = open("verbs.txt", "r")
+array = [[]]
+contador = 0
+verbo = ""
+fallados = []
+for c in archivo.readlines():
+    for letra in c:
+        if not ("|") in letra:
+            if ("\n") in letra:
+                array.append([])
+                contador += 1
+            else:
+                verbo += letra
+        else:
+            array[contador].append(verbo)
+            verbo = ""
+contador = 0
+ventana = Tk()
+ventana.geometry("850x600+300+60")
+ventana.title("Verbs For Dummies")
+pp = StringVar()
+
+def preguntar():
+    #pp = StringVar()
+
+    imagenFondo = PhotoImage(file="fondo.pgm")
+    lbImagenFondo = Label(ventana, image=imagenFondo).place(x=0, y=0)
+
+    imagen = PhotoImage(file=array[contador][3]+".pgm")
+    lbImagen = Label(ventana, image=imagen,relief="groove", borderwidth=15,
+                     bg="#920F06").place(x=130, y=240)
+
+    #Verbo en ESPAÑOL
+    lbBF = Label(ventana, text=array[contador][3],
+                 font=("Agency FB", 40)).place(x=320, y=10)
+
+    lbPP = Label(ventana, text="Past Participle",
+                 font=("Agency FB", 40)).place(x=550, y=90)
+
+    lbPF = Label(ventana, text="Past Form",
+                 font=("Agency FB", 40)).place(x=300, y=90)
+    lbBF = Label(ventana, text=array[contador][1],
+                 font=("Agency FB", 30)).place(x=340, y=170)
+
+    lbBF = Label(ventana, text="Base Form",
+                 font=("Agency FB", 40)).place(x=50, y=90)
+    lbBF = Label(ventana, text=array[contador][0],
+                 font=("Agency FB", 30)).place(x=95, y=170)
+
+    txtUsuario = Entry(ventana, textvariable=pp,width=9,
+                       font=("Agency FB", 30)).place(x=590, y=170)
+
+
+
+    btnAyuda = Button(ventana, text=" Validar ",cursor="hand2",bg="#FFF776",
+                      bd=12,activebackground="#12FF32" ,command=validar,
+                      font=("Agency FB", 30)).place(x=380, y=490)
+    ventana.mainloop()
+
+def fallar():
+    global contador,fallados
+
+    imagenFondo = PhotoImage(file="fondoError.pgm")
+    lbImagenFondo = Label(ventana, image=imagenFondo).place(x=0, y=0)
+
+    imagen = PhotoImage(file=array[contador][3]+".pgm")
+    lbImagen = Label(ventana, image=imagen).place(x=130, y=240)
+
+    #Verbo en ESPAÑOL
+    lbBF = Label(ventana, text="Has FALLADO!!",
+                 font=("Agency FB", 40)).place(x=270, y=10)
+
+    lbPP = Label(ventana, text="Past Participle",
+                 font=("Agency FB", 40)).place(x=550, y=90)
+    lbBF = Label(ventana, text=array[contador][2],background="#64F937",
+                 font=("Agency FB", 30)).place(x=580, y=170)
+
+    lbPF = Label(ventana, text="Past Form",
+                 font=("Agency FB", 40)).place(x=300, y=90)
+    lbBF = Label(ventana, text=array[contador][1],
+                 font=("Agency FB", 30)).place(x=340, y=170)
+
+    lbBF = Label(ventana, text="Base Form",
+                 font=("Agency FB", 40)).place(x=50, y=90)
+    lbBF = Label(ventana, text=array[contador][0],
+                 font=("Agency FB", 30)).place(x=95, y=170)
+    fallados.append(array[contador][3])
+    contador += 1
+    pp.set("")
+    if len(fallados)==4:
+        btnAyuda = Button(ventana, text=" Has perdido ", bd=12, background="#F50743", command=perder,
+                          font=("Agency FB", 30)).place(x=353, y=490)
+    else:
+        btnAyuda = Button(ventana, text=" Continuar ", bd=12, background="#F50743", command=preguntar,
+                          font=("Agency FB", 30)).place(x=353, y=490)
+    ventana.mainloop()
+
+def perder():
+    global contador,fallados
+
+    imagenFondo = PhotoImage(file="fondoError.pgm")
+    lbImagenFondo = Label(ventana, image=imagenFondo).place(x=0, y=0)
+
+    lbBF = Label(ventana, text="Has Perdido!!",
+                 font=("Agency FB", 40)).place(x=290, y=10)
+
+    lbBF = Label(ventana, text="Tus errores fueron en los siguientes verbos:",
+                 font=("Agency FB", 30)).place(x=120, y=80)
+
+    lbPP = Label(ventana, text=fallados[0],
+                 font=("Agency FB", 45)).place(x=150, y=180)
+
+    lbPF = Label(ventana, text=fallados[1],
+                 font=("Agency FB", 45)).place(x=150, y=280)
+
+    lbBF = Label(ventana, text=fallados[2],
+                 font=("Agency FB", 45)).place(x=550, y=180)
+
+    lbBF = Label(ventana, text=fallados[3],
+                 font=("Agency FB", 45)).place(x=550, y=280)
+
+    fallados = []
+    contador = 0
+    pp.set("")
+    btnAyuda = Button(ventana, text=" Reiniciar ",bd=12, background="#F50743",command=preguntar,
+                      font=("Agency FB", 30)).place(x=353, y=490)
+    ventana.mainloop()
+
+def validar():
+    global contador
+    if pp.get() in array[contador][2]:
+        pp.set("")
+        contador+=1
+        if contador<len(array):
+            preguntar()
+    else:
+        fallar()
+
+preguntar()
